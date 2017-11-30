@@ -1,0 +1,30 @@
+dmesg -n8
+hostname uml
+rm -f /etc/mtab
+touch /etc/mtab
+mount -t proc none /proc
+mount -t sysfs none /sys
+mount -t devpts none /dev/pts
+mount -t hostfs -o /home none /home
+mount -t hostfs -o /sw none /sw
+mount -t hostfs -o /data01 none /data01
+mount -t hostfs -o /ctcdata none /ctcdata
+mount -t hostfs -o /systest none /systest
+mount -t hostfs -o /sw/pub/release/uml/osp_uml_64/usr_fedora none /usr
+
+rm -f /var/run/netns/mgmt
+ip netns add mgmt
+touch /var/run/netns/default
+mount --bind /proc/1/ns/net /var/run/netns/default
+
+sysctl -w net.ipv6.conf.default.router_solicitations=0
+sysctl -w net.ipv6.conf.all.router_solicitations=0
+sysctl -w net.ipv6.conf.default.autoconf=0
+sysctl -w net.ipv6.conf.all.autoconf=0
+sysctl -w net.ipv6.conf.default.dad_transmits=0
+sysctl -w net.ipv6.conf.all.dad_transmits=0
+ifconfig lo 127.0.0.1
+
+rm -f /var/run/xinetd.pid
+xinetd -stayalive -pidfile /var/run/xinetd.pid
+
